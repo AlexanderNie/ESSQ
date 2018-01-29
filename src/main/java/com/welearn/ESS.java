@@ -7,36 +7,58 @@ package com.welearn;
 
 import com.welearn.app.forms.QImageFrame;
 import com.welearn.domain.entities.QAPair;
+import com.welearn.domain.entities.QuizResult;
 import com.welearn.domain.service.SmartAgentService;
-import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
  * @author weiwei2017
  */
 public class ESS {
-
+    
+    private QAPair qaPair;
+    private QImageFrame frame;
+    SmartAgentService agent = new SmartAgentService();
+    public ESS()
+    {
+        qaPair = agent.getNextQuestion();
+        frame = new QImageFrame();
+        frame.updateQuestion(qaPair);
+        frame.updateUser("Alexander Nie");
+        frame.startTimer(SmartAgentService.MAX_QUIZ_TIME);
+        frame.setVisible(true);
+    }
     /**
      * @param args the command line arguments
      *
      */
     public static void main(String[] args) {
-        QAPair qaPair = new SmartAgentService().getNextQuestion();
-        QImageFrame frame = new QImageFrame();
-        frame.setVisible(true);
+        ESS controller = new ESS();
+        controller.getFrame().setObserver(controller);
+    }
+
+    /**
+     * @return the frame
+     */
+    public QImageFrame getFrame() {
+        return frame;
+    }
+
+    /**
+     * @param frame the frame to set
+     */
+    public void setFrame(QImageFrame frame) {
+        this.frame = frame;
+    }
+    
+    public void updateProgress(QuizResult result)
+    {
+        agent.updateProgress(result);
+    }
+
+    public void moveToNext() {
+        qaPair = agent.getNextQuestion();
+        frame.updateQuestion(qaPair);
     }
 
 }

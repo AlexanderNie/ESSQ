@@ -197,6 +197,8 @@ public class QuestionLibService {
         Random rand = new Random();
         Questions qObj = ques.get(rand.nextInt(ques.size()));
         List<Answers> qAnswer = answers.get(qObj.getqId());
-        return new QAPair(qObj, qAnswer);
+        QAPair qapari = new QAPair(qObj, qAnswer);
+        System.out.println(qapari);
+        return qapari;
     }
 }

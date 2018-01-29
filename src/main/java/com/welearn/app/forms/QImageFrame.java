@@ -5,13 +5,26 @@
  */
 package com.welearn.app.forms;
 
+import com.welearn.ESS;
+import com.welearn.domain.entities.QAPair;
+import com.welearn.domain.entities.QuizResult;
+import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Image;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
+import javax.swing.JDialog;
+import javax.swing.JOptionPane;
+import javax.swing.Timer;
 
 /**
  *
@@ -19,7 +32,15 @@ import javax.swing.ImageIcon;
  */
 public class QImageFrame extends javax.swing.JFrame {
     
-    private static final String resourcPath = "/com/welearn/resources/";
+    private static final String resourcPath = "src/main/resources/";
+    private static final Integer HINT_LIVE_TIME = 10;
+    private QAPair qaPair;
+    javax.swing.Timer timer;
+    Integer timeLeft;
+    Integer hintsLeft;
+    javax.swing.Timer hintTimer;
+    JOptionPane hintMsg;
+    private ESS controller;
 
     /**
      * Creates new form QuestiosFrame
@@ -41,60 +62,92 @@ public class QImageFrame extends javax.swing.JFrame {
         questionsGroup = new javax.swing.ButtonGroup();
         lblTimer = new javax.swing.JLabel();
         lblUserName = new javax.swing.JLabel();
-        jRadioButton1 = new javax.swing.JRadioButton();
-        jRadioButton2 = new javax.swing.JRadioButton();
-        jRadioButton3 = new javax.swing.JRadioButton();
-        jRadioButton4 = new javax.swing.JRadioButton();
+        rbOption1 = new javax.swing.JRadioButton();
+        rbOption2 = new javax.swing.JRadioButton();
+        rbOption3 = new javax.swing.JRadioButton();
+        rbOption4 = new javax.swing.JRadioButton();
         btnNext = new javax.swing.JButton();
         lblSeq = new javax.swing.JLabel();
         lblImage = new javax.swing.JLabel();
         lblQuestion = new javax.swing.JLabel();
+        btnSubmit = new javax.swing.JButton();
+        btnHints = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Q");
 
-        questionsGroup.add(jRadioButton1);
+        lblTimer.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
 
-        questionsGroup.add(jRadioButton2);
+        lblUserName.setFont(new java.awt.Font("Bodoni MT", 3, 24)); // NOI18N
+        lblUserName.setForeground(new java.awt.Color(51, 51, 255));
 
-        questionsGroup.add(jRadioButton3);
+        questionsGroup.add(rbOption1);
+        rbOption1.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
 
-        questionsGroup.add(jRadioButton4);
+        questionsGroup.add(rbOption2);
+        rbOption2.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
+
+        questionsGroup.add(rbOption3);
+        rbOption3.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
+
+        questionsGroup.add(rbOption4);
+        rbOption4.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
 
         btnNext.setText("Next");
+        btnNext.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnNextActionPerformed(evt);
+            }
+        });
+
+        lblQuestion.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+
+        btnSubmit.setText("Submit");
+        btnSubmit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSubmitActionPerformed(evt);
+            }
+        });
+
+        btnHints.setText("Hint");
+        btnHints.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnHintsActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(lblUserName)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 312, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(lblUserName, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(lblSeq)
-                        .addGap(36, 36, 36)
-                        .addComponent(lblTimer, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(59, 59, 59))
+                        .addGap(81, 81, 81)
+                        .addComponent(lblTimer))
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(lblImage)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btnNext)
-                        .addContainerGap())
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addGap(38, 38, 38)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(lblQuestion, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(jRadioButton3)
-                                .addGap(218, 218, 218)
-                                .addComponent(jRadioButton4))
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                    .addComponent(lblImage, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(rbOption3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(rbOption1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(rbOption2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(rbOption4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addGap(0, 0, Short.MAX_VALUE))
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(jRadioButton1)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jRadioButton2)))
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(lblQuestion)
-                        .addGap(0, 0, Short.MAX_VALUE))))
+                                .addComponent(btnSubmit)
+                                .addGap(55, 55, 55)
+                                .addComponent(btnHints)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 69, Short.MAX_VALUE)
+                                .addComponent(btnNext)))))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -103,29 +156,79 @@ public class QImageFrame extends javax.swing.JFrame {
                 .addComponent(lblSeq)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(lblUserName)
-                    .addComponent(lblTimer, javax.swing.GroupLayout.PREFERRED_SIZE, 0, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(6, 6, 6)
+                    .addComponent(lblTimer, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(lblUserName, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(lblQuestion)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jRadioButton1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jRadioButton3)
-                        .addGap(18, 18, 18)
-                        .addComponent(lblImage)
-                        .addGap(18, 18, 18)
-                        .addComponent(btnNext))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jRadioButton2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jRadioButton4)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(rbOption2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(rbOption1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(rbOption3)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(rbOption4)
+                .addGap(9, 9, 9)
+                .addComponent(lblImage)
+                .addGap(39, 39, 39)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnNext)
+                    .addComponent(btnSubmit)
+                    .addComponent(btnHints))
+                .addGap(48, 48, 48))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btnSubmitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSubmitActionPerformed
+        // TODO add your handling code here:
+        boolean pass = false;
+        if ((rbOption1.isSelected() && qaPair.getAnwers().get(0).isRight())
+            ||(rbOption2.isSelected() && qaPair.getAnwers().get(1).isRight())
+            ||(rbOption3.isSelected() && qaPair.getAnwers().get(2).isRight())
+            ||(rbOption4.isSelected() && qaPair.getAnwers().get(3).isRight()))
+        {
+            pass = true;
+        }
+        QuizResult result  = new QuizResult(qaPair.getQuestion().getType(), qaPair.getQuestion().getLevel(), pass);
+        controller.updateProgress(result);
+        controller.moveToNext();        
+    }//GEN-LAST:event_btnSubmitActionPerformed
+
+    private void btnNextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNextActionPerformed
+        // TODO add your handling code here:
+        QuizResult result  = new QuizResult(qaPair.getQuestion().getType(), qaPair.getQuestion().getLevel(), false);
+        controller.updateProgress(result);
+        controller.moveToNext();      
+    }//GEN-LAST:event_btnNextActionPerformed
+
+    private void btnHintsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHintsActionPerformed
+        // TODO add your handling code here:
+        hintsLeft = HINT_LIVE_TIME;
+        final JOptionPane msg = new JOptionPane(qaPair.getQuestion().getHint(), JOptionPane.INFORMATION_MESSAGE);
+        final JDialog dlg = msg.createDialog("Hints");
+        dlg.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+        dlg.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentShown(ComponentEvent e) {
+                super.componentShown(e);
+                final Timer t = new Timer(1000,new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        dlg.setTitle("Hints is closing in " + hintsLeft + " Seconds");
+                        if(hintsLeft<=0)
+                        {
+                            dlg.setVisible(false);
+                        }
+                        hintsLeft--;
+                    }
+                });
+                t.start();
+            }
+        });
+        dlg.setVisible(true);
+    }//GEN-LAST:event_btnHintsActionPerformed
 
     /**
      * @param args the command line arguments
@@ -166,29 +269,87 @@ public class QImageFrame extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnHints;
     private javax.swing.JButton btnNext;
-    private javax.swing.JRadioButton jRadioButton1;
-    private javax.swing.JRadioButton jRadioButton2;
-    private javax.swing.JRadioButton jRadioButton3;
-    private javax.swing.JRadioButton jRadioButton4;
+    private javax.swing.JButton btnSubmit;
     private javax.swing.JLabel lblImage;
     private javax.swing.JLabel lblQuestion;
     private javax.swing.JLabel lblSeq;
     private javax.swing.JLabel lblTimer;
     private javax.swing.JLabel lblUserName;
     private javax.swing.ButtonGroup questionsGroup;
+    private javax.swing.JRadioButton rbOption1;
+    private javax.swing.JRadioButton rbOption2;
+    private javax.swing.JRadioButton rbOption3;
+    private javax.swing.JRadioButton rbOption4;
     // End of variables declaration//GEN-END:variables
 
     private void initImage() {
-        try {
-            Image img = ImageIO.read(getClass().getResource(resourcPath + "env1.jpg"));
+        try {            
+            Image img = ImageIO.read(new File(resourcPath + "env1.jpg"));
             lblImage.setIcon(new ImageIcon(img));
-            String question ="test <br>" +"test <br>"+"test <br>";
-            lblQuestion.setText("<html>"+ question +"</html>");
-            pack();
-            
         } catch (IOException ex) {
             Logger.getLogger(QImageFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    
+    public void updateQuestion(QAPair q)
+    {
+        setQaPair(q);
+        render();
+    }
+    
+    public void updateUser(String username)
+    {
+        lblUserName.setText(username);
+    }
+
+    /**
+     * @param qaPair the qaPair to set
+     */
+    private void setQaPair(QAPair qaPair) {
+        this.qaPair = qaPair;
+    }
+
+    private void render() {
+        setTitle("Q" + qaPair.getQuestion().getqId());
+        lblQuestion.setText(qaPair.getQuestion().getDescription());
+        rbOption1.setText(qaPair.getAnwers().get(0).getDescription());
+        
+        rbOption2.setText(qaPair.getAnwers().get(1).getDescription());
+        
+        rbOption3.setText(qaPair.getAnwers().get(2).getDescription());
+        
+        rbOption4.setText(qaPair.getAnwers().get(3).getDescription());
+        
+        questionsGroup.clearSelection();
+        
+        pack();
+        Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+        this.setLocation(dim.width/2-this.getSize().width/2, dim.height/2-this.getSize().height/2);
+    }
+
+    public void startTimer(Integer MAX_QUIZ_TIME) {
+        timeLeft = MAX_QUIZ_TIME;
+        timer = new javax.swing.Timer(1000, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Integer minutes =  timeLeft/60;
+                Integer seconds = timeLeft % 60;
+                lblTimer.setText(String.format("%02d", minutes) + " : " + String.format("%02d", seconds));
+                if (timeLeft <= 0) {
+                    timer.stop();
+                }
+                timeLeft--;
+                if(timeLeft< 580) lblTimer.setForeground(Color.blue);
+                if(timeLeft< MAX_QUIZ_TIME*1/3) lblTimer.setForeground(Color.red);
+            }
+        });
+        timer.start();
+    }
+
+    public void setObserver(ESS controller) {
+        this.controller = controller;
+    }
+    
 }

@@ -21,6 +21,7 @@ import java.util.Random;
  */
 public class SmartAgentService {
     
+    public static final Integer MAX_QUIZ_TIME = 10*60;
     // challenge mode says if mistake happen, priority will be give to same type same difficulty leve questions
     public static final String CHALLENGE_MODE = "challenge";
     // guidance mode says if mistake happen, priority will be give to same type less difficulty leve questions 
